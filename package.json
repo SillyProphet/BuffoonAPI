@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/SillyProphet/BuffoonAPI/issues"
   },
-  "homepage": "https://github.com/SillyProphet/BuffoonAPI#readme"
+  "homepage": "https://github.com/SillyProphet/BuffoonAPI#readme",
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1"
+  }
 }
