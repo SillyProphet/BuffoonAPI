@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const multer = require("multer");
 
 const API_KEY = process.env.API_KEY;
 const PORT = process.env.PORT;
@@ -17,24 +18,54 @@ function APIKeyCheck(req, res, next) {
     }
 }
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
+
 app.use(bodyParser.json());
 app.use(APIKeyCheck);
-
-app.get('/', (req, res) => {
-    res.send("Congrats you are in!");
-});
+app.use(express.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
     console.log('Server active on port ' + PORT);
 });
 
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+    console.log(req.body.username);
+    res.send("uploaded!")
+})
+
 app.get('/api/ocean', async (req, res) => {
-    const Page = req.query.page * 10 - 11 + 1 || 0;
-    try {
-        const [rows] = await pool.query('SELECT * FROM islands where id > ' + Page + " limit 10");
-        res.json(rows);
-    } catch (err) {
-        console.error('User fetch failed: ', err);
-        res.status(500).send('Failed to fetch users');
+    const Sort = req.query.sort;
+
+    if(Sort == "oldest") {
+        try {
+            const Page = req.query.page * 10 - 11 + 1 || 0;
+            const [rows] = await pool.query('SELECT * FROM islands WHERE id > ' + Page + " LIMIT 10");
+            res.json(rows);
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Failed to fetch islands');
+        }
+    } 
+    else if(Sort == "newest") {
+        try {
+            const Page = (req.query.page - 1) * 10;
+            const [rows] = await pool.query('SELECT * FROM islands ORDER BY id DESC LIMIT 10 OFFSET ' + Page);
+            res.json(rows);
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Failed to fetch islands');
+        }
+    } 
+    else {
+        res.status(500).send('Failed to fetch islands');
     }
+
 });
