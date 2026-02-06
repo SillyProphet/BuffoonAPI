@@ -4,6 +4,8 @@ const app = express();
 
 const API_KEY = process.env.API_KEY;
 const PORT = process.env.PORT;
+const pool = require('./dbpool');
+const bodyParser = require('body-parser');
 
 function APIKeyCheck(req, res, next) {
     const apiKey = req.headers['api-key'];
@@ -15,6 +17,7 @@ function APIKeyCheck(req, res, next) {
     }
 }
 
+app.use(bodyParser.json());
 app.use(APIKeyCheck);
 
 app.get('/', (req, res) => {
@@ -23,4 +26,14 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log('Server active on port ' + PORT);
+});
+
+app.get('/api/users', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM islands');
+        res.json(rows);
+    } catch (err) {
+        console.error('User fetch failed: ', err);
+        res.status(500).send('Failed to fetch users');
+    }
 });
