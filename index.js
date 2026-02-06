@@ -28,9 +28,10 @@ app.listen(PORT, () => {
     console.log('Server active on port ' + PORT);
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/api/ocean', async (req, res) => {
+    const Page = req.query.page * 10 - 11 + 1 || 0;
     try {
-        const [rows] = await pool.query('SELECT * FROM islands');
+        const [rows] = await pool.query('SELECT * FROM islands where id > ' + Page + " limit 10");
         res.json(rows);
     } catch (err) {
         console.error('User fetch failed: ', err);
