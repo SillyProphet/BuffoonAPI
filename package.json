@@ -1,20 +1,21 @@
 {
   "name": "buffoonapi",
   "version": "1.0.0",
-  "description": "API for Isle Of Buffoons.",
-  "homepage": "https://github.com/SillyProphet/BuffoonAPI#readme",
-  "bugs": {
-    "url": "https://github.com/SillyProphet/BuffoonAPI/issues"
+  "description": "Hello! This is the Main Repository for the Isle of Buffoons API!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SillyProphet/BuffoonAPI.git"
   },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "author": "Austin Walker",
   "type": "commonjs",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  "bugs": {
+    "url": "https://github.com/SillyProphet/BuffoonAPI/issues"
+  },
+  "homepage": "https://github.com/SillyProphet/BuffoonAPI#readme"
 }
