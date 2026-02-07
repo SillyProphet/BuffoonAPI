@@ -41,11 +41,11 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         await pool.query('insert into islands (username, post, imageurl) values (?, ?, ?)', 
         [Username, Posts, Image]);
-        res.send('Upload Completed')
+        res.send('Upload Completed');
     } 
     catch (err) {
         console.log(err);
-        res.status(500).send('Failed to upload Island!')
+        res.status(500).send('Failed to upload Island!');
     }
 })
 
@@ -83,3 +83,15 @@ app.get('/api/ocean', async (req, res) => {
     }
 
 });
+
+// Completely wipes ALL island data in your database.
+app.get('/api/self-destruct', async (req, res) => {
+    try {
+        await pool.query('TRUNCATE TABLE islands'); // It only takes 3 words.
+        res.send('Island data has been cleared.')
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to wipe island data!');
+    }
+})
