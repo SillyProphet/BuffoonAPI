@@ -1,16 +1,17 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
-
-const API_KEY = process.env.API_KEY;
-const PORT = process.env.PORT;
+// Variables and Dependencies.
+require('dotenv').config(); // Dont forget to have a ".env".
+const express = require('express'); // API Dependency
+const app = express(); // API Dependency
+const API_KEY = process.env.API_KEY; // Set an API key in ".env".
+const PORT = process.env.PORT; // Set a Port in ".env".
 const pool = require('./dbpool');
 const upload = require('./upload');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser'); // More stuff to make the API work.
 
+// Runs before anything to make sure user has correct API key.
 function APIKeyCheck(req, res, next) {
     const apiKey = req.headers['api-key'];
-    if (apiKey == API_KEY) {
+    if (apiKey == API_KEY) { // The best security ever implemented in a piece of software.
         next();
     }   
     else {
@@ -18,20 +19,25 @@ function APIKeyCheck(req, res, next) {
     }
 }
 
-app.use("/uploads", express.static("uploads"));
-app.use(bodyParser.json());
-app.use(APIKeyCheck);
-app.use(express.urlencoded({ extended: true }));
+// API Middleware
+app.use("/uploads", express.static("uploads")); // Use directory of image as link.
+app.use(bodyParser.json()); // Handle JSON in API.
+app.use(APIKeyCheck); // So the API uses the API Key Checker.
+app.use(express.urlencoded({ extended: true })); // Makes it images can be uploaded.
 
+// Starts API on chosen port.
 app.listen(PORT, () => {
     console.log('Server active on port ' + PORT);
 });
 
+// Handles submission for users island.
 app.post('/api/upload', upload.single('image'), async (req, res) => {
-    const Image = req.file.path;
+    // Data submitted by user.
+    const Image = req.file.path; // File path for users image.
     const Username = req.body.username;
     const Posts = req.body.post;
 
+    // Attempts to make new entry in database for data.
     try {
         await pool.query('insert into islands (username, post, imageurl) values (?, ?, ?)', 
         [Username, Posts, Image]);
@@ -43,12 +49,14 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     }
 })
 
+// Game engine will be using this to sort and create pages for islands.
 app.get('/api/ocean', async (req, res) => {
     const Sort = req.query.sort;
 
+    // Attempts to sort islands from oldest -> newest.
     if(Sort == "oldest") {
         try {
-            const Page = req.query.page * 10 - 11 + 1 || 0;
+            const Page = req.query.page * 10 - 11 + 1 || 0; // Weird equation that still works.
             const [rows] = await pool.query('SELECT * FROM islands WHERE id > ' + Page + " LIMIT 10");
             res.json(rows);
         } 
@@ -56,10 +64,11 @@ app.get('/api/ocean', async (req, res) => {
             console.error(err);
             res.status(500).send('Failed to fetch islands');
         }
-    } 
+    }
+    // Attempts to sort islands from newest -> oldest. 
     else if(Sort == "newest") {
         try {
-            const Page = (req.query.page - 1) * 10;
+            const Page = (req.query.page - 1) * 10; // Pagination using an offset.
             const [rows] = await pool.query('SELECT * FROM islands ORDER BY id DESC LIMIT 10 OFFSET ' + Page);
             res.json(rows);
         } 
@@ -67,7 +76,8 @@ app.get('/api/ocean', async (req, res) => {
             console.error(err);
             res.status(500).send('Failed to fetch islands');
         }
-    } 
+    }
+    // If NO valid sorting parameter is passed. 
     else {
         res.status(500).send('Failed to fetch islands');
     }
