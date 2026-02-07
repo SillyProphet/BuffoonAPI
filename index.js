@@ -23,7 +23,7 @@ function APIKeyCheck(req, res, next) {
 app.use("/uploads", express.static("uploads")); // Use directory of image as link.
 app.use(bodyParser.json()); // Handle JSON in API.
 app.use(APIKeyCheck); // So the API uses the API Key Checker.
-app.use(express.urlencoded({ extended: true })); // Makes it images can be uploaded.
+app.use(express.urlencoded({ extended: true })); // Makes it so images can be uploaded.
 
 // Starts API on chosen port.
 app.listen(PORT, () => {
