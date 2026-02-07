@@ -33,7 +33,7 @@ app.listen(PORT, () => {
 // Handles submission for users island.
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     // Data submitted by user.
-    const Image = req.file.path; // File path for users image.
+    const Image = "uploads/" + req.file.filename; // File path for users image.
     const Username = req.body.username;
     const Posts = req.body.post;
 
