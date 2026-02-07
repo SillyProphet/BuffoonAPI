@@ -20,9 +20,9 @@ function APIKeyCheck(req, res, next) {
 }
 
 // API Middleware
-app.use("/uploads", express.static("uploads")); // Use directory of image as link.
-app.use(bodyParser.json()); // Handle JSON in API.
 app.use(APIKeyCheck); // So the API uses the API Key Checker.
+app.use(bodyParser.json()); // Handle JSON in API.
+app.use("/uploads", express.static("uploads")); // Use directory of image as link.
 app.use(express.urlencoded({ extended: true })); // Makes it so images can be uploaded.
 
 // Starts API on chosen port.
