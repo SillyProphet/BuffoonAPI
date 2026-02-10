@@ -1,1 +1,1 @@
-Hello! This is the Main Repository for the Isle of Buffoons API!
+Hello! This is the Main Repository for the Isle of Buffoons API! This is currently being developed alongside my social media called "IsleOfBuffoons," where you can draw your posts and view others as islands in an ocean.
