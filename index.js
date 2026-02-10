@@ -4,14 +4,14 @@ const express = require('express'); // API Dependency
 const app = express(); // API Dependency
 const API_KEY = process.env.API_KEY; // Set an API key in ".env".
 const PORT = process.env.PORT; // Set a Port in ".env".
-const pool = require('./dbpool');
-const upload = require('./upload');
+const pool = require('./dbpool'); // Uses "dbpool.js".
+const upload = require('./upload'); // Uses "upload.js".
 const bodyParser = require('body-parser'); // More stuff to make the API work.
 
 // Runs before anything to make sure user has correct API key.
 function APIKeyCheck(req, res, next) {
     const apiKey = req.headers['api-key'];
-    if (apiKey == API_KEY) { // The best security ever implemented in a piece of software.
+    if (apiKey == API_KEY) { // Checks provided API Key against the one set in the server ".env".
         next();
     }   
     else {
@@ -56,7 +56,7 @@ app.get('/api/ocean', async (req, res) => {
     // Attempts to sort islands from oldest -> newest.
     if(Sort == "oldest") {
         try {
-            const Page = req.query.page * 10 - 11 + 1 || 0; // Weird equation that still works.
+            const Page = req.query.page * 10 - 11 + 1 || 0; // Allows for paging up.
             const [rows] = await pool.query('SELECT * FROM islands WHERE id > ' + Page + " LIMIT 10");
             res.json(rows);
         } 
@@ -87,7 +87,7 @@ app.get('/api/ocean', async (req, res) => {
 // Completely wipes ALL island data in your database.
 app.get('/api/self-destruct', async (req, res) => {
     try {
-        await pool.query('TRUNCATE TABLE islands'); // It only takes 3 words.
+        await pool.query('TRUNCATE TABLE islands'); // Tells MySQL to clear Table.
         res.send('Island data has been cleared.')
     }
     catch (err) {
