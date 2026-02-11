@@ -84,6 +84,19 @@ app.get('/api/ocean', async (req, res) => {
 
 });
 
+// Gets number of available pages
+app.get('/api/maxpages', async (req, res) => {
+    try {
+        const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
+        const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
+        res.send(PageCnt);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to get max pages');
+    }
+})
+
 // Completely wipes ALL island data in your database.
 app.get('/api/self-destruct', async (req, res) => {
     try {
