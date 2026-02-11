@@ -58,7 +58,12 @@ app.get('/api/ocean', async (req, res) => {
         try {
             const Page = req.query.page * 10 - 11 + 1 || 0; // Allows for paging up.
             const [rows] = await pool.query('SELECT * FROM islands WHERE id > ' + Page + " LIMIT 10");
-            res.json(rows);
+            const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
+            const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
+            res.json({
+                P1: rows,
+                P2: PageCnt
+            });
         } 
         catch (err) {
             console.error(err);
@@ -70,7 +75,12 @@ app.get('/api/ocean', async (req, res) => {
         try {
             const Page = (req.query.page - 1) * 10; // Pagination using an offset.
             const [rows] = await pool.query('SELECT * FROM islands ORDER BY id DESC LIMIT 10 OFFSET ' + Page);
-            res.json(rows);
+            const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
+            const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
+            res.json({
+                P1: rows,
+                P2: PageCnt
+            });
         } 
         catch (err) {
             console.error(err);
@@ -83,19 +93,6 @@ app.get('/api/ocean', async (req, res) => {
     }
 
 });
-
-// Gets number of available pages
-app.get('/api/maxpages', async (req, res) => {
-    try {
-        const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
-        const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
-        res.send(PageCnt);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send('Failed to get max pages');
-    }
-})
 
 // Completely wipes ALL island data in your database.
 app.get('/api/self-destruct', async (req, res) => {
