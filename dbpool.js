@@ -16,9 +16,9 @@ const pool = mysql.createPool({
     password: Password,
     database: Database,
     waitForConnections: true,
-    connectionLimit: 10, // 10 simultaneous connections.
-    maxIdle: 10, // 10 connections allowed to idle.
-    idleTimeout: 60000, // 60 seconds before timeout.
+    connectionLimit: 20, // simultaneous connections.
+    maxIdle: 20, // connections allowed to idle.
+    idleTimeout: 30000, // ms before timeout.
     queueLimit: 0 // unlimited queue size.
 });
 

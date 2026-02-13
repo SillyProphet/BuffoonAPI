@@ -56,8 +56,8 @@ app.get('/api/ocean', async (req, res) => {
     // Attempts to sort islands from oldest -> newest.
     if(Sort == "oldest") {
         try {
-            const Page = req.query.page * 10 - 11 + 1 || 0; // Allows for paging up.
-            const [rows] = await pool.query('SELECT * FROM islands WHERE id > ' + Page + " LIMIT 10");
+            const Page = (((req.query.page) || 1)- 1) * 10; // Pagination using an offset.
+            const [rows] = await pool.query('SELECT * FROM islands ORDER BY id LIMIT 10 OFFSET ?', [Page]);
             const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
             const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
             res.json({
@@ -73,8 +73,8 @@ app.get('/api/ocean', async (req, res) => {
     // Attempts to sort islands from newest -> oldest. 
     else if(Sort == "newest") {
         try {
-            const Page = (req.query.page - 1) * 10; // Pagination using an offset.
-            const [rows] = await pool.query('SELECT * FROM islands ORDER BY id DESC LIMIT 10 OFFSET ' + Page);
+            const Page = (((req.query.page) || 1)- 1) * 10; // Pagination using an offset.
+            const [rows] = await pool.query('SELECT * FROM islands ORDER BY id DESC LIMIT 10 OFFSET ?', [Page]);
             const [Pages] = await pool.query('SELECT COUNT(*) AS total FROM islands');
             const PageCnt = Math.ceil((Pages[0].total) / 10); // Uses rounding and division to find page amount.
             res.json({
